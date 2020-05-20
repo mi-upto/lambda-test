@@ -9,6 +9,8 @@ npm install
 ```
 npm run deploy
 ```
+- compile TypeScript
+- serverless deploy
 
 # compile
 TypeScript -> JavaScript
@@ -16,6 +18,10 @@ TypeScript -> JavaScript
 npm run tsc
 ```
 
+# check deploy files
+```
+npm run sls -- package
+```
 
 # commit 
 ```
