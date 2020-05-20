@@ -7,7 +7,7 @@ npm install
 
 # deploy
 ```
-sls deploy
+npm run deploy
 ```
 
 # compile
