@@ -1,4 +1,4 @@
-type Rule =  "ガチヤグラ" | "ガチアサリ" | 'ガチエリア' | 'ガチホコ';
+type Rule =  'ガチヤグラ' | 'ガチアサリ' | 'ガチエリア' | 'ガチホコ';
 
 export interface LeagueResponse {
   result: StageData[]
