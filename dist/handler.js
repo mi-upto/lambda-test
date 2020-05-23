@@ -36,18 +36,67 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.handler = void 0;
-function handler(event) {
+exports.handlerNext = exports.handlerNow = void 0;
+var api_client_1 = require("./api-client");
+function handlerNow(event) {
     return __awaiter(this, void 0, void 0, function () {
+        var responseData, data, e_1;
         return __generator(this, function (_a) {
-            return [2 /*return*/, {
-                    statusCode: 201,
-                    body: JSON.stringify({
-                        message: "Go Serverless v1.0! Your function executed successfully!",
-                        test: "michon",
-                    }),
-                }];
+            switch (_a.label) {
+                case 0:
+                    responseData = null;
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, , 4]);
+                    return [4 /*yield*/, api_client_1.client.get("/league/now")];
+                case 2:
+                    data = (_a.sent()).data;
+                    console.log(data);
+                    responseData = data;
+                    return [3 /*break*/, 4];
+                case 3:
+                    e_1 = _a.sent();
+                    console.log(e_1);
+                    return [3 /*break*/, 4];
+                case 4: return [2 /*return*/, {
+                        statusCode: 200,
+                        body: JSON.stringify({
+                            responseData: responseData,
+                        }),
+                    }];
+            }
         });
     });
 }
-exports.handler = handler;
+exports.handlerNow = handlerNow;
+function handlerNext(event) {
+    return __awaiter(this, void 0, void 0, function () {
+        var responseData, data, e_2;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    responseData = null;
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, , 4]);
+                    return [4 /*yield*/, api_client_1.client.get("/league/now")];
+                case 2:
+                    data = (_a.sent()).data;
+                    console.log(data);
+                    responseData = data;
+                    return [3 /*break*/, 4];
+                case 3:
+                    e_2 = _a.sent();
+                    console.log(e_2);
+                    return [3 /*break*/, 4];
+                case 4: return [2 /*return*/, {
+                        statusCode: 200,
+                        body: JSON.stringify({
+                            responseData: responseData,
+                        }),
+                    }];
+            }
+        });
+    });
+}
+exports.handlerNext = handlerNext;

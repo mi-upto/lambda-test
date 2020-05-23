@@ -4,27 +4,46 @@ import {
   APIGatewayProxyResult,
 } from "aws-lambda";
 
+import { client } from "./api-client";
 import { LeagueResponse } from './types'
 
-// @see https://spla2.yuu26.com/
-//spla2.yuu26.com/league/now
-//spla2.yuu26.com/league/next
 
-
-
-export async function getSPLATOON_STAGE(type: String, When: String): LeagueResponse {
-
-}
-
-
-export async function handler(
+export async function handlerNow(
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> {
+  let responseData: LeagueResponse | null = null;
+    try {
+      const { data } = await client.get(`/league/now`);
+      responseData = data;
+    } catch (e) {
+      console.log(e);
+    }
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        responseData,
+      }),
+    };
+}
+
+export async function handlerNext(
+  event: APIGatewayProxyEvent
+): Promise<APIGatewayProxyResult> {
+
+  let responseData: LeagueResponse | null = null;
+  try {
+    const { data } = await client.get(`/league/next`);
+    responseData = data;
+  } catch (e) {
+    console.log(e);
+  }
+
   return {
-    statusCode: 201,
+    statusCode: 200,
     body: JSON.stringify({
-      message: "Go Serverless v1.0! Your function executed successfully!",
-      test: "michon",
+      responseData,
     }),
   };
 }
+

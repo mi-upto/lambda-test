@@ -12,10 +12,17 @@ provider:
     # - node_modules/aws-sdk/**
 
 functions:
-  notification:
-    handler: dist/handler.handler
-    memorySize: 138
+  now:
+    handler: dist/handler.handlerNow
+    memorySize: 128
     events:
       - http:
-          path: '/'
+          path: '/now'
+          method: get
+  next:
+    handler: dist/handler.handlerNext
+    memorySize: 128
+    events:
+      - http:
+          path: '/next'
           method: get

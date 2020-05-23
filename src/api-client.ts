@@ -14,7 +14,7 @@ export const client: AxiosInstance = axios.create({
 
 client.interceptors.response.use(
   (response: AxiosResponse): AxiosResponse => {
-    const data = camelCaseKeys(response.data);
+    const data = camelCaseKeys(response.data, { deep: true });
     return { ...response.data, data };
   }
 );
