@@ -1,20 +1,19 @@
 type Rule =  'ガチヤグラ' | 'ガチアサリ' | 'ガチエリア' | 'ガチホコ';
-
-export interface LeagueResponse {
+ export interface LeagueResponse {
   result: StageData[]
 }
 
 interface StageData {
   rule: Rule;
-  rule_ex: StageRuleEx;
+  ruleEx: StageRuleEx;
   maps: Array<String>;
-  maps_ex: Array<MapsEx>; // maps_ex: MapsEx[];
+  mapsEx: Array<MapsEx>; // maps_ex: MapsEx[];
   start: string;
-  start_utc: string;
-  start_t: number;
+  startUtc: string;
+  startT: number;
   end: string;
-  end_utc: string;
-  end_t: number;
+  endUtc: string;
+  endT: number;
 }
 
 interface StageRuleEx {
