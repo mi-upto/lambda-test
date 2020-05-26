@@ -26,3 +26,10 @@ functions:
       - http:
           path: '/next'
           method: get
+  post:
+    handler: dist/handler.handlerPost
+    memorySize: 128
+    events:
+      - http:
+          path: '/post'
+          method: post

@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.handlerNext = exports.handlerNow = void 0;
+exports.handlerPost = exports.handlerNext = exports.handlerNow = void 0;
 var api_client_1 = require("./api-client");
 function handlerNow(event) {
     return __awaiter(this, void 0, void 0, function () {
@@ -51,7 +51,6 @@ function handlerNow(event) {
                     return [4 /*yield*/, api_client_1.client.get("/league/now")];
                 case 2:
                     data = (_a.sent()).data;
-                    console.log(data);
                     responseData = data;
                     return [3 /*break*/, 4];
                 case 3:
@@ -79,10 +78,9 @@ function handlerNext(event) {
                     _a.label = 1;
                 case 1:
                     _a.trys.push([1, 3, , 4]);
-                    return [4 /*yield*/, api_client_1.client.get("/league/now")];
+                    return [4 /*yield*/, api_client_1.client.get("/league/next")];
                 case 2:
                     data = (_a.sent()).data;
-                    console.log(data);
                     responseData = data;
                     return [3 /*break*/, 4];
                 case 3:
@@ -100,3 +98,55 @@ function handlerNext(event) {
     });
 }
 exports.handlerNext = handlerNext;
+function handlerPost(event) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            console.log("starting handlerPost", event);
+            return [2 /*return*/, {
+                    statusCode: 200,
+                    body: JSON.stringify({
+                        response_type: "in_channel",
+                        blocks: [
+                            {
+                                type: "section",
+                                text: {
+                                    type: "mrkdwn",
+                                    text: "現在 `ガチホコバトル` 開催中！",
+                                },
+                            },
+                            {
+                                type: "context",
+                                elements: [
+                                    {
+                                        type: "mrkdwn",
+                                        text: "*Map:* モズク農園, アンチョビットゲームズ",
+                                    },
+                                ],
+                            },
+                            {
+                                type: "image",
+                                title: {
+                                    type: "plain_text",
+                                    text: "モズク農園",
+                                    emoji: true,
+                                },
+                                image_url: "https://app.splatoon2.nintendo.net/images/stage/a12e4bf9f871677a5f3735d421317fbbf09e1a78.png",
+                                alt_text: "モズク農園",
+                            },
+                            {
+                                type: "image",
+                                title: {
+                                    type: "plain_text",
+                                    text: "アンチョビットゲームズ",
+                                    emoji: true,
+                                },
+                                image_url: "https://app.splatoon2.nintendo.net/images/stage/1430e5ac7ae9396a126078eeab824a186b490b5a.png",
+                                alt_text: "アンチョビットゲームズ",
+                            },
+                        ],
+                    }),
+                }];
+        });
+    });
+}
+exports.handlerPost = handlerPost;
