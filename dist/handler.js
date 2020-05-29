@@ -35,9 +35,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handlerPost = exports.handlerNext = exports.handlerNow = void 0;
 var api_client_1 = require("./api-client");
+var types_1 = require("./types");
+var qs_1 = __importDefault(require("qs"));
 function handlerNow(event) {
     return __awaiter(this, void 0, void 0, function () {
         var responseData, data, e_1;
@@ -68,9 +73,34 @@ function handlerNow(event) {
     });
 }
 exports.handlerNow = handlerNow;
+var getSplatoonStages = function (_a) {
+    var when = _a.when, _b = _a.type, type = _b === void 0 ? 'league' : _b;
+    return __awaiter(void 0, void 0, void 0, function () {
+        var responseData, data, e_2;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    responseData = null;
+                    _c.label = 1;
+                case 1:
+                    _c.trys.push([1, 3, , 4]);
+                    return [4 /*yield*/, api_client_1.client.get("/" + type + "/" + when)];
+                case 2:
+                    data = (_c.sent()).data;
+                    responseData = data;
+                    return [3 /*break*/, 4];
+                case 3:
+                    e_2 = _c.sent();
+                    console.log(e_2);
+                    return [3 /*break*/, 4];
+                case 4: return [2 /*return*/, responseData];
+            }
+        });
+    });
+};
 function handlerNext(event) {
     return __awaiter(this, void 0, void 0, function () {
-        var responseData, data, e_2;
+        var responseData, data, e_3;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -84,8 +114,8 @@ function handlerNext(event) {
                     responseData = data;
                     return [3 /*break*/, 4];
                 case 3:
-                    e_2 = _a.sent();
-                    console.log(e_2);
+                    e_3 = _a.sent();
+                    console.log(e_3);
                     return [3 /*break*/, 4];
                 case 4: return [2 /*return*/, {
                         statusCode: 200,
@@ -100,52 +130,112 @@ function handlerNext(event) {
 exports.handlerNext = handlerNext;
 function handlerPost(event) {
     return __awaiter(this, void 0, void 0, function () {
+        var eventBody, whenText, responseData, stages;
         return __generator(this, function (_a) {
-            console.log("starting handlerPost", event);
-            return [2 /*return*/, {
-                    statusCode: 200,
-                    body: JSON.stringify({
-                        response_type: "in_channel",
-                        blocks: [
-                            {
-                                type: "section",
-                                text: {
-                                    type: "mrkdwn",
-                                    text: "現在 `ガチホコバトル` 開催中！",
-                                },
-                            },
-                            {
-                                type: "context",
-                                elements: [
+            switch (_a.label) {
+                case 0:
+                    if (event.body === null) {
+                        return [2 /*return*/, {
+                                statusCode: 400,
+                                body: JSON.stringify({ message: 'invalid 1' })
+                            }];
+                    }
+                    eventBody = qs_1.default.parse(event.body);
+                    if (!types_1.isRequestParameter(eventBody)) {
+                        return [2 /*return*/, {
+                                statusCode: 400,
+                                body: JSON.stringify({ message: "invalid 2" }),
+                            }];
+                    }
+                    whenText = eventBody.text;
+                    if (!types_1.isWhenText(whenText)) {
+                        console.log('case 1: text');
+                        return [2 /*return*/, {
+                                statusCode: 200,
+                                body: JSON.stringify({
+                                    blocks: [
+                                        {
+                                            type: "section",
+                                            text: {
+                                                type: "mrkdwn",
+                                                text: "Sorry, I didn\u2019t quite get that. I\u2019m easily confused. Perhaps try the words in a different order, or use quotes around the message you'd like to send. This usually works:\n`/schedule [now or next]`",
+                                            },
+                                        },
+                                        {
+                                            "type": "section",
+                                            "text": {
+                                                "type": "mrkdwn",
+                                                "text": "This is a section block with a button."
+                                            },
+                                            "accessory": {
+                                                "type": "button",
+                                                "text": {
+                                                    "type": "plain_text",
+                                                    "text": "Click Me",
+                                                    "emoji": true
+                                                },
+                                                "value": "click_me_123"
+                                            }
+                                        }
+                                    ],
+                                }),
+                            }];
+                    }
+                    return [4 /*yield*/, getSplatoonStages({ when: whenText, type: 'league' })];
+                case 1:
+                    responseData = _a.sent();
+                    if (responseData === null) {
+                        return [2 /*return*/, {
+                                statusCode: 400,
+                                body: JSON.stringify({ message: "invalid 3" }),
+                            }];
+                    }
+                    stages = responseData.result[0];
+                    return [2 /*return*/, {
+                            statusCode: 200,
+                            body: JSON.stringify({
+                                response_type: "in_channel",
+                                blocks: [
                                     {
-                                        type: "mrkdwn",
-                                        text: "*Map:* モズク農園, アンチョビットゲームズ",
+                                        type: "section",
+                                        text: {
+                                            type: "mrkdwn",
+                                            text: "\u73FE\u5728 `" + stages.rule + "` \u958B\u50AC\u4E2D\uFF01",
+                                        },
+                                    },
+                                    {
+                                        type: "context",
+                                        elements: [
+                                            {
+                                                type: "mrkdwn",
+                                                text: "*Stage:* " + stages.mapsEx[0].name + ", " + stages.mapsEx[1].name,
+                                            },
+                                        ],
+                                    },
+                                    {
+                                        type: "image",
+                                        title: {
+                                            type: "plain_text",
+                                            text: stages.mapsEx[0].name,
+                                            emoji: true,
+                                        },
+                                        image_url: "" + stages.mapsEx[0].image,
+                                        alt_text: "" + stages.mapsEx[0].name,
+                                    },
+                                    {
+                                        type: "image",
+                                        title: {
+                                            type: "plain_text",
+                                            text: "" + stages.mapsEx[1].name,
+                                            emoji: true,
+                                        },
+                                        image_url: "" + stages.mapsEx[1].image,
+                                        alt_text: "" + stages.mapsEx[1].name,
                                     },
                                 ],
-                            },
-                            {
-                                type: "image",
-                                title: {
-                                    type: "plain_text",
-                                    text: "モズク農園",
-                                    emoji: true,
-                                },
-                                image_url: "https://app.splatoon2.nintendo.net/images/stage/a12e4bf9f871677a5f3735d421317fbbf09e1a78.png",
-                                alt_text: "モズク農園",
-                            },
-                            {
-                                type: "image",
-                                title: {
-                                    type: "plain_text",
-                                    text: "アンチョビットゲームズ",
-                                    emoji: true,
-                                },
-                                image_url: "https://app.splatoon2.nintendo.net/images/stage/1430e5ac7ae9396a126078eeab824a186b490b5a.png",
-                                alt_text: "アンチョビットゲームズ",
-                            },
-                        ],
-                    }),
-                }];
+                            }),
+                        }];
+            }
         });
     });
 }

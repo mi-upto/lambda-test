@@ -5,8 +5,8 @@ import {
 } from "aws-lambda";
 
 import { client } from "./api-client";
-import { LeagueResponse } from './types'
-
+import { LeagueResponse, When, Type, isRequestParameter, isWhenText } from "./types";
+import qs from 'qs';
 
 export async function handlerNow(
   event: APIGatewayProxyEvent
@@ -26,6 +26,23 @@ export async function handlerNow(
       }),
     };
 }
+
+interface GetSplatoonStagesOption {
+  when: When;
+  type?: Type;
+}
+
+const getSplatoonStages = async ({ when , type = 'league' }: GetSplatoonStagesOption) => {
+  let responseData: LeagueResponse | null = null;
+  try {
+    const { data } = await client.get(`/${type}/${when}`);
+    responseData = data;
+  } catch (e) {
+    console.log(e);
+  }
+
+  return responseData;
+};
 
 export async function handlerNext(
   event: APIGatewayProxyEvent
@@ -47,13 +64,53 @@ export async function handlerNext(
   };
 }
 
-
 export async function handlerPost(
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> {
+  if (event.body === null) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: 'invalid 1' })
+    }
+  }
 
-  console.log("starting handlerPost", event);
+  const eventBody = qs.parse(event.body);
+  if (!isRequestParameter(eventBody)) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: "invalid 2" }),
+    };
+  }
 
+  const whenText = eventBody.text;
+  if (!isWhenText(whenText) ) {
+    console.log('case 1: text');
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        blocks: [
+          {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text: `Sorry, I didn’t quite get that. I’m easily confused. Perhaps try the words in a different order, or use quotes around the message you'd like to send. This usually works:\n\`/schedule [now or next]\``,
+            },
+          },
+        ],
+      }),
+    };
+  }
+
+  const responseData = await getSplatoonStages({ when: whenText, type: 'league' });
+
+  if (responseData === null) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: "invalid 3" }),
+    };
+  }
+
+  const stages = responseData.result[0];
 
   return {
     statusCode: 200,
@@ -64,7 +121,7 @@ export async function handlerPost(
           type: "section",
           text: {
             type: "mrkdwn",
-            text: "現在 `ガチホコバトル` 開催中！",
+            text: `現在 \`${stages.rule}\` 開催中！`,
           },
         },
         {
@@ -72,7 +129,7 @@ export async function handlerPost(
           elements: [
             {
               type: "mrkdwn",
-              text: "*Map:* モズク農園, アンチョビットゲームズ",
+              text: `*Stage:* ${stages.mapsEx[0].name}, ${stages.mapsEx[1].name}`,
             },
           ],
         },
@@ -80,23 +137,23 @@ export async function handlerPost(
           type: "image",
           title: {
             type: "plain_text",
-            text: "モズク農園",
+            text: stages.mapsEx[0].name,
             emoji: true,
           },
           image_url:
-            "https://app.splatoon2.nintendo.net/images/stage/a12e4bf9f871677a5f3735d421317fbbf09e1a78.png",
-          alt_text: "モズク農園",
+            `${stages.mapsEx[0].image}`,
+          alt_text: `${stages.mapsEx[0].name}`,
         },
         {
           type: "image",
           title: {
             type: "plain_text",
-            text: "アンチョビットゲームズ",
+            text: `${stages.mapsEx[1].name}`,
             emoji: true,
           },
           image_url:
-            "https://app.splatoon2.nintendo.net/images/stage/1430e5ac7ae9396a126078eeab824a186b490b5a.png",
-          alt_text: "アンチョビットゲームズ",
+            `${stages.mapsEx[1].image}`,
+          alt_text: `${stages.mapsEx[1].name}`,
         },
       ],
     }),
