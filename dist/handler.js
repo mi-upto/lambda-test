@@ -43,6 +43,7 @@ exports.handlerPost = exports.handlerNext = exports.handlerNow = void 0;
 var api_client_1 = require("./api-client");
 var types_1 = require("./types");
 var qs_1 = __importDefault(require("qs"));
+var util_1 = require("./util");
 function handlerNow(event) {
     return __awaiter(this, void 0, void 0, function () {
         var responseData, data, e_1;
@@ -130,7 +131,7 @@ function handlerNext(event) {
 exports.handlerNext = handlerNext;
 function handlerPost(event) {
     return __awaiter(this, void 0, void 0, function () {
-        var eventBody, whenText, responseData, stages;
+        var eventBody, whenText, textMsg, responseData, stages, startAt, endAt, stageText;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -149,35 +150,11 @@ function handlerPost(event) {
                     }
                     whenText = eventBody.text;
                     if (!types_1.isWhenText(whenText)) {
-                        console.log('case 1: text');
+                        textMsg = util_1.sendToSlackTextMsg("Sorry, I didn’t quite get that. I’m easily confused. Perhaps try the words in a different order, or use quotes around the message you'd like to send. This usually works:\n\`/schedule [now or next]\`");
                         return [2 /*return*/, {
                                 statusCode: 200,
                                 body: JSON.stringify({
-                                    blocks: [
-                                        {
-                                            type: "section",
-                                            text: {
-                                                type: "mrkdwn",
-                                                text: "Sorry, I didn\u2019t quite get that. I\u2019m easily confused. Perhaps try the words in a different order, or use quotes around the message you'd like to send. This usually works:\n`/schedule [now or next]`",
-                                            },
-                                        },
-                                        {
-                                            "type": "section",
-                                            "text": {
-                                                "type": "mrkdwn",
-                                                "text": "This is a section block with a button."
-                                            },
-                                            "accessory": {
-                                                "type": "button",
-                                                "text": {
-                                                    "type": "plain_text",
-                                                    "text": "Click Me",
-                                                    "emoji": true
-                                                },
-                                                "value": "click_me_123"
-                                            }
-                                        }
-                                    ],
+                                    blocks: [textMsg],
                                 }),
                             }];
                     }
@@ -191,24 +168,21 @@ function handlerPost(event) {
                             }];
                     }
                     stages = responseData.result[0];
+                    startAt = util_1.convertDateTime(stages.startT);
+                    endAt = util_1.convertDateTime(stages.endT);
+                    stageText = util_1.sendToSlackTextMsg("\u73FE\u5728 `" + stages.rule + "` \u958B\u50AC\u4E2D\n\u30B9\u30C6\u30FC\u30B8\u306F `" + stages.mapsEx[0].name + "`, `" + stages.mapsEx[1].name + "` \u3067\u3059 \uD83E\uDD91");
                     return [2 /*return*/, {
                             statusCode: 200,
                             body: JSON.stringify({
                                 response_type: "in_channel",
                                 blocks: [
-                                    {
-                                        type: "section",
-                                        text: {
-                                            type: "mrkdwn",
-                                            text: "\u73FE\u5728 `" + stages.rule + "` \u958B\u50AC\u4E2D\uFF01",
-                                        },
-                                    },
+                                    stageText,
                                     {
                                         type: "context",
                                         elements: [
                                             {
                                                 type: "mrkdwn",
-                                                text: "*Stage:* " + stages.mapsEx[0].name + ", " + stages.mapsEx[1].name,
+                                                text: "*Time:* " + startAt + " ~ " + endAt,
                                             },
                                         ],
                                     },

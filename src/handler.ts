@@ -5,8 +5,16 @@ import {
 } from "aws-lambda";
 
 import { client } from "./api-client";
-import { LeagueResponse, When, Type, isRequestParameter, isWhenText } from "./types";
+import {
+  LeagueResponse,
+  When,
+  Type,
+  isRequestParameter,
+  isWhenText,
+} from "./types";
 import qs from 'qs';
+import { convertDateTime, sendToSlackTextMsg } from "./util";
+
 
 export async function handlerNow(
   event: APIGatewayProxyEvent
@@ -84,19 +92,11 @@ export async function handlerPost(
 
   const whenText = eventBody.text;
   if (!isWhenText(whenText) ) {
-    console.log('case 1: text');
+    const textMsg = sendToSlackTextMsg("Sorry, I didn’t quite get that. I’m easily confused. Perhaps try the words in a different order, or use quotes around the message you'd like to send. This usually works:\n\`/schedule [now or next]\`");
     return {
       statusCode: 200,
       body: JSON.stringify({
-        blocks: [
-          {
-            type: "section",
-            text: {
-              type: "mrkdwn",
-              text: `Sorry, I didn’t quite get that. I’m easily confused. Perhaps try the words in a different order, or use quotes around the message you'd like to send. This usually works:\n\`/schedule [now or next]\``,
-            },
-          },
-        ],
+        blocks: [textMsg],
       }),
     };
   }
@@ -111,25 +111,22 @@ export async function handlerPost(
   }
 
   const stages = responseData.result[0];
+  const startAt = convertDateTime(stages.startT);
+  const endAt = convertDateTime(stages.endT);
+  const stageText = sendToSlackTextMsg(`現在 \`${stages.rule}\` 開催中！\nステージは \`${stages.mapsEx[0].name}\`, \`${stages.mapsEx[1].name}\` 🦑`);
 
   return {
     statusCode: 200,
     body: JSON.stringify({
       response_type: "in_channel",
       blocks: [
-        {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text: `現在 \`${stages.rule}\` 開催中！`,
-          },
-        },
+        stageText,
         {
           type: "context",
           elements: [
             {
               type: "mrkdwn",
-              text: `*Stage:* ${stages.mapsEx[0].name}, ${stages.mapsEx[1].name}`,
+              text: `*Time:* ${startAt} ~ ${endAt}`,
             },
           ],
         },
@@ -140,8 +137,7 @@ export async function handlerPost(
             text: stages.mapsEx[0].name,
             emoji: true,
           },
-          image_url:
-            `${stages.mapsEx[0].image}`,
+          image_url: `${stages.mapsEx[0].image}`,
           alt_text: `${stages.mapsEx[0].name}`,
         },
         {
@@ -151,8 +147,7 @@ export async function handlerPost(
             text: `${stages.mapsEx[1].name}`,
             emoji: true,
           },
-          image_url:
-            `${stages.mapsEx[1].image}`,
+          image_url: `${stages.mapsEx[1].image}`,
           alt_text: `${stages.mapsEx[1].name}`,
         },
       ],

@@ -3,6 +3,8 @@ type Rule =  'ガチヤグラ' | 'ガチアサリ' | 'ガチエリア' | 'ガチ
   result: StageData[]
 }
 
+ export type UnixTime = number;
+
 interface StageData {
   rule: Rule;
   ruleEx: StageRuleEx;
@@ -10,10 +12,10 @@ interface StageData {
   mapsEx: Array<MapsEx>; // maps_ex: MapsEx[];
   start: string;
   startUtc: string;
-  startT: number;
+  startT: UnixTime;
   end: string;
   endUtc: string;
-  endT: number;
+  endT: UnixTime;
 }
 
 interface StageRuleEx {
