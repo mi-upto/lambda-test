@@ -1,29 +1,40 @@
 READ ME
 
-# start
+# dependent services
+slash commands
+ - https://api.slack.com/interactivity/slash-commands
+
+serverless framework
+ - https://www.serverless.com/
+
+aws
+ - https://aws.amazon.com/
+
+## start up
 ```
 npm install
 ```
 
-# deploy
+## compile
+TypeScript -> JavaScript
+```
+npm run tsc
+```
+
+## deploy
 ```
 npm run deploy
 ```
 - compile TypeScript
 - serverless deploy
 
-# compile
-TypeScript -> JavaScript
-```
-npm run tsc
-```
 
-# check deploy files
+### check deploy files
 ```
 npm run sls -- package
 ```
 
-# commit 
+## commit 
 ```
 # ==== Emojis ====
 # 🐛  :bug: バグ修正
