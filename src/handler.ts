@@ -40,7 +40,7 @@ interface GetSplatoonStagesOption {
   type?: Type;
 }
 
-const getSplatoonStages = async ({ when , type = 'league' }: GetSplatoonStagesOption) => {
+const getSplatoonStages = async ({ when = 'now' , type = 'league' }: GetSplatoonStagesOption) => {
   let responseData: LeagueResponse | null = null;
   try {
     const { data } = await client.get(`/${type}/${when}`);
@@ -70,6 +70,16 @@ export async function handlerNext(
       responseData,
     }),
   };
+}
+
+const createTitle = (whenText: When): string => {
+  switch(whenText) {
+    case 'next':
+      return '次は \`${stages.rule}\` 開催予定！'
+    case 'now':
+    default:
+      return '現在 \`${stages.rule}\` 開催中！'
+  }
 }
 
 export async function handlerPost(
@@ -113,14 +123,16 @@ export async function handlerPost(
   const stages = responseData.result[0];
   const startAt = convertDateTime(stages.startT);
   const endAt = convertDateTime(stages.endT);
-  const stageText = sendToSlackTextMsg(`現在 \`${stages.rule}\` 開催中！\nステージは \`${stages.mapsEx[0].name}\`, \`${stages.mapsEx[1].name}\` 🦑`);
+  const heading = createTitle(whenText);
+  const stageText = `ステージは \`${stages.mapsEx[0].name}\`, \`${stages.mapsEx[1].name}\` 🦑`;
+  const ruleAndStageText = sendToSlackTextMsg(`${heading} \n ${stageText}`);
 
   return {
     statusCode: 200,
     body: JSON.stringify({
       response_type: "in_channel",
       blocks: [
-        stageText,
+        ruleAndStageText,
         {
           type: "context",
           elements: [
