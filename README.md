@@ -1,5 +1,11 @@
 READ ME
 
+# about
+slack bot give you information on splatoon2 leagues
+
+![ika-bot](https://user-images.githubusercontent.com/28241535/89651186-80a7e100-d8fe-11ea-9465-3227c9cc996b.gif)
+
+
 # dependent services
 slash commands
  - https://api.slack.com/interactivity/slash-commands
