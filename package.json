@@ -1,5 +1,5 @@
 {
-  "name": "lambda-test",
+  "name": "ika-bot",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -24,13 +24,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mi-upto/lambda-test.git"
+    "url": "git+https://github.com/mi-upto/ika-bot.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/mi-upto/lambda-test/issues"
+    "url": "https://github.com/mi-upto/ika-bot/issues"
   },
-  "homepage": "https://github.com/mi-upto/lambda-test#readme"
+  "homepage": "https://github.com/mi-upto/ika-bot#readme"
 }

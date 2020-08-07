@@ -75,23 +75,23 @@ function handlerNow(event) {
 }
 exports.handlerNow = handlerNow;
 var getSplatoonStages = function (_a) {
-    var when = _a.when, _b = _a.type, type = _b === void 0 ? 'league' : _b;
+    var _b = _a.when, when = _b === void 0 ? 'now' : _b, _c = _a.type, type = _c === void 0 ? 'league' : _c;
     return __awaiter(void 0, void 0, void 0, function () {
         var responseData, data, e_2;
-        return __generator(this, function (_c) {
-            switch (_c.label) {
+        return __generator(this, function (_d) {
+            switch (_d.label) {
                 case 0:
                     responseData = null;
-                    _c.label = 1;
+                    _d.label = 1;
                 case 1:
-                    _c.trys.push([1, 3, , 4]);
+                    _d.trys.push([1, 3, , 4]);
                     return [4 /*yield*/, api_client_1.client.get("/" + type + "/" + when)];
                 case 2:
-                    data = (_c.sent()).data;
+                    data = (_d.sent()).data;
                     responseData = data;
                     return [3 /*break*/, 4];
                 case 3:
-                    e_2 = _c.sent();
+                    e_2 = _d.sent();
                     console.log(e_2);
                     return [3 /*break*/, 4];
                 case 4: return [2 /*return*/, responseData];
@@ -129,9 +129,18 @@ function handlerNext(event) {
     });
 }
 exports.handlerNext = handlerNext;
+var createTitle = function (whenText, rule) {
+    switch (whenText) {
+        case "next":
+            return "\u6B21\u306F `" + rule + "` \u958B\u50AC\u4E88\u5B9A\uFF01";
+        case "now":
+        default:
+            return "\u73FE\u5728 `" + rule + "` \u958B\u50AC\u4E2D\uFF01";
+    }
+};
 function handlerPost(event) {
     return __awaiter(this, void 0, void 0, function () {
-        var eventBody, whenText, textMsg, responseData, stages, startAt, endAt, stageText;
+        var eventBody, whenText, textMsg, responseData, stages, startAt, endAt, heading, stageText, ruleAndStageText;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -170,13 +179,15 @@ function handlerPost(event) {
                     stages = responseData.result[0];
                     startAt = util_1.convertDateTime(stages.startT);
                     endAt = util_1.convertDateTime(stages.endT);
-                    stageText = util_1.sendToSlackTextMsg("\u73FE\u5728 `" + stages.rule + "` \u958B\u50AC\u4E2D\n\u30B9\u30C6\u30FC\u30B8\u306F `" + stages.mapsEx[0].name + "`, `" + stages.mapsEx[1].name + "` \u3067\u3059 \uD83E\uDD91");
+                    heading = createTitle(whenText, stages.rule);
+                    stageText = "\u30B9\u30C6\u30FC\u30B8\u306F `" + stages.mapsEx[0].name + "`, `" + stages.mapsEx[1].name + "` \uD83E\uDD91";
+                    ruleAndStageText = util_1.sendToSlackTextMsg(heading + " \n " + stageText);
                     return [2 /*return*/, {
                             statusCode: 200,
                             body: JSON.stringify({
                                 response_type: "in_channel",
                                 blocks: [
-                                    stageText,
+                                    ruleAndStageText,
                                     {
                                         type: "context",
                                         elements: [

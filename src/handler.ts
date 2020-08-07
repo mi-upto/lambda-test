@@ -72,15 +72,15 @@ export async function handlerNext(
   };
 }
 
-const createTitle = (whenText: When): string => {
-  switch(whenText) {
-    case 'next':
-      return '次は \`${stages.rule}\` 開催予定！'
-    case 'now':
+const createTitle = (whenText: When, rule: string): string => {
+  switch (whenText) {
+    case "next":
+      return `次は \`${rule}\` 開催予定！`;
+    case "now":
     default:
-      return '現在 \`${stages.rule}\` 開催中！'
+      return `現在 \`${rule}\` 開催中！`;
   }
-}
+};
 
 export async function handlerPost(
   event: APIGatewayProxyEvent
@@ -123,7 +123,7 @@ export async function handlerPost(
   const stages = responseData.result[0];
   const startAt = convertDateTime(stages.startT);
   const endAt = convertDateTime(stages.endT);
-  const heading = createTitle(whenText);
+  const heading = createTitle(whenText, stages.rule);
   const stageText = `ステージは \`${stages.mapsEx[0].name}\`, \`${stages.mapsEx[1].name}\` 🦑`;
   const ruleAndStageText = sendToSlackTextMsg(`${heading} \n ${stageText}`);
 
