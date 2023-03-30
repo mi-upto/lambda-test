@@ -15,6 +15,9 @@ serverless framework
 
 aws
  - https://aws.amazon.com/
+ 
+splatoon api
+  - https://spla2.yuu26.com/
 
 ## start up
 ```
