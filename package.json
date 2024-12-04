@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "camelcase-keys": "^6.2.2",
     "dayjs": "^1.8.28",
     "qs": "^6.9.4"
